@@ -1,0 +1,41 @@
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+
+.DS_Store
+# Capturas e notas locais do OpenChamber (não são parte do app).
+.openchamber/
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Referência local do Figma (não vai para o repositório)
+reference/
+
+# Notas e material interno de desenvolvimento
+ARCHITECTURE.md
+VERIFICACAO.md
+docs/
+scripts/
+
+# Relatórios de teste
+playwright-report
+test-results
+blob-report
+playwright/.cache
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Segredos locais
+.env
+.env.*
+!.env.example
+.vercel

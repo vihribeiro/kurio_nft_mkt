@@ -1,0 +1,5 @@
+# Relatórios do Lighthouse: JSON/HTML gerados pela ferramenta, não formatar.
+docs/lighthouse
+
+# Service worker gerado pelo MSW.
+public/mockServiceWorker.js

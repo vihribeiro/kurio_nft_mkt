@@ -1,0 +1,273 @@
+@import '@fontsource/roboto-mono/latin-400.css';
+@import '@fontsource/roboto-mono/latin-500.css';
+@import '@fontsource/roboto-mono/latin-700.css';
+@import 'tailwindcss';
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────
+ * Kurio — tokens de design
+ * ─────────────────────────────────────────────────────────────────────────
+ * A identidade é escura por definição (não é uma preferência do sistema), por
+ * isso os tokens ficam só em `:root` e o `<html>` carrega `class="dark"` para
+ * ativar as variantes `dark:` que os componentes do shadcn trazem de fábrica.
+ *
+ * A paleta abaixo vem do arquivo de referência no Figma. Os nomes `--kurio-*`
+ * são a marca; os nomes sem prefixo são os tokens semânticos que os
+ * componentes do shadcn esperam (`--background`, `--primary`, ...), apontando
+ * para a marca. Assim os componentes herdam a identidade sem serem reescritos.
+ */
+
+:root {
+  /* ── Paleta da marca ─────────────────────────────────────────────────── */
+  --kurio-canvas: #140d0a; /* fundo da página */
+  --kurio-surface: #241612; /* cartões e superfícies de conteúdo */
+  --kurio-surface-raised: #2f1d15; /* campos, popovers, camadas elevadas */
+  --kurio-surface-overlay: #38220f; /* houver, seleção, estados ativos */
+  --kurio-line: #3b271b; /* bordas e divisores */
+  --kurio-field: #3f2319; /* borda de campos/inputs (print do Figma) */
+  --kurio-brand: #d28a4c; /* ação primária */
+  --kurio-brand-strong: #e89b55; /* ação primária em houver/foco */
+  --kurio-ink: #f5f1eb; /* texto principal */
+  --kurio-ink-muted: #cfb28c; /* texto secundário */
+  --kurio-ink-subtle: #b39463; /* texto terciário, legendas, placeholders */
+  --kurio-danger: #f0805f; /* erro e asterisco de campo obrigatório */
+
+  /* Texto sobre a ação primária: precisa de contraste, não é branco puro. */
+  --kurio-on-brand: #1b1005;
+
+  /* ── Tokens semânticos (shadcn/ui) ───────────────────────────────────── */
+  --background: var(--kurio-canvas);
+  --foreground: var(--kurio-ink);
+  --card: var(--kurio-surface);
+  --card-foreground: var(--kurio-ink);
+  --popover: var(--kurio-surface-raised);
+  --popover-foreground: var(--kurio-ink);
+  --primary: var(--kurio-brand);
+  --primary-foreground: var(--kurio-on-brand);
+  --secondary: var(--kurio-surface-raised);
+  --secondary-foreground: var(--kurio-ink);
+  --muted: var(--kurio-surface-raised);
+  --muted-foreground: var(--kurio-ink-subtle);
+  --accent: var(--kurio-surface-overlay);
+  --accent-foreground: var(--kurio-ink);
+  --destructive: var(--kurio-danger);
+  --destructive-foreground: var(--kurio-on-brand);
+  --border: var(--kurio-line);
+  --input: var(--kurio-field);
+  --ring: var(--kurio-brand);
+  --radius: 0.75rem;
+
+  /* ── Geometria ───────────────────────────────────────────────────────── */
+  /* Larguras do layout de desktop: sidebar fixa, cabeçalho e container. */
+  --kurio-sidebar-w: 310px;
+  --kurio-header-h: 68px;
+}
+
+@theme inline {
+  /* Cor: semânticos do shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Cor: nomes diretos da marca (mais legíveis no código de tela) */
+  --color-canvas: var(--kurio-canvas);
+  --color-surface: var(--kurio-surface);
+  --color-surface-raised: var(--kurio-surface-raised);
+  --color-surface-overlay: var(--kurio-surface-overlay);
+  --color-line: var(--kurio-line);
+  --color-field: var(--kurio-field);
+  --color-brand: var(--kurio-brand);
+  --color-brand-strong: var(--kurio-brand-strong);
+  --color-ink: var(--kurio-ink);
+  --color-ink-muted: var(--kurio-ink-muted);
+  --color-ink-subtle: var(--kurio-ink-subtle);
+  --color-danger: var(--kurio-danger);
+
+  /* Raio: escala derivada de --radius, como no shadcn */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 12px);
+}
+
+@theme {
+  --font-sans: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Container central das telas de desktop (1200px). */
+  --container-page: 75rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    /* Evita "salto" de layout quando a página passa a rolar. */
+    scrollbar-gutter: stable;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * Foco consistente em todo o app: um anel na cor de marca, visível apenas
+   * para navegação por teclado. Nunca removemos o indicador de foco — só o
+   * tornamos mais discreto no clique do mouse e claro no teclado.
+   */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--kurio-surface-overlay);
+    color: var(--kurio-ink);
+  }
+
+  /* Respeita quem pediu menos movimento no sistema operacional. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /*
+   * Esqueleto de carregamento com "shimmer" (brilho que varre o bloco).
+   * Usado enquanto os dados do REST chegam.
+   */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--kurio-surface-raised);
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(232 155 85 / 0.09) 50%,
+      transparent 100%
+    );
+    animation: kurio-shimmer 1.6s ease-in-out infinite;
+  }
+
+  /*
+   * Texto só para leitores de tela: preserva o rótulo acessível sem ocupar
+   * espaço visual.
+   */
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@keyframes kurio-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Slider duplo da faixa de preço (duas alças sobre um único trilho). */
+.price-range-input {
+  appearance: none;
+  pointer-events: none;
+  margin: 0;
+  background: transparent;
+}
+
+.price-range-input::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.price-range-input::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
+.price-range-input::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border: 2px solid var(--kurio-surface);
+  border-radius: 50%;
+  background: var(--kurio-brand);
+  cursor: grab;
+}
+
+.price-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--kurio-surface);
+  border-radius: 50%;
+  background: var(--kurio-brand);
+  cursor: grab;
+}
+
+.price-range-input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--kurio-ink);
+  outline-offset: 2px;
+}
+
+.price-range-input:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--kurio-ink);
+  outline-offset: 2px;
+}
+
+/* Notificações de feedback não podem bloquear o menu inferior no celular. */
+.toaster [data-sonner-toast] {
+  pointer-events: none !important;
+}
