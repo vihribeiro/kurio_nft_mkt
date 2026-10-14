@@ -33,10 +33,6 @@ test.describe('falhas no checkout', () => {
     await page.getByRole('link', { name: 'Conectar e finalizar' }).click()
     await submitLogin(page)
 
-    await page.getByRole('button', { name: 'Desconectar carteira' }).click()
-    await expect(page.getByRole('button', { name: 'Confirmar compra' })).toBeDisabled()
-    await page.getByRole('button', { name: 'Reconectar carteira' }).click()
-
     await page.getByRole('button', { name: 'Confirmar compra' }).click()
     await expect(page.getByText('Não foi possível processar o pagamento.')).toBeVisible()
 

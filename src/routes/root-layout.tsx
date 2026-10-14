@@ -145,8 +145,22 @@ export function RootLayout() {
             ) : (
               <Link
                 to="/login"
-                className="rounded-md bg-brand px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-strong"
+                className="flex h-[35px] w-[100px] items-center justify-center gap-[7px] rounded-[6px] bg-brand text-xs font-medium text-canvas transition-colors hover:bg-brand-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
               >
+                <svg
+                  aria-hidden="true"
+                  viewBox="1230 32 18 18"
+                  className="size-[18px] shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M1247.16 41.1006H1237.13" />
+                  <path d="M1244.72 38.6706L1247.16 41.1006L1244.72 43.5306" />
+                  <path d="M1242.63 37.3583C1242.36 34.3749 1241.24 33.2916 1236.8 33.2916C1230.88 33.2916 1230.88 35.2166 1230.88 40.9999C1230.88 46.7833 1230.88 48.7083 1236.8 48.7083C1241.24 48.7083 1242.36 47.6249 1242.63 44.6416" />
+                </svg>
                 Entrar
               </Link>
             )}

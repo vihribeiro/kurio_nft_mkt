@@ -22,15 +22,19 @@ export function SidebarNav({ active }: { active: SidebarSection }) {
     <nav aria-label="Minha conta" className="flex flex-col gap-1">
       <p className="px-3 pb-1 pt-2 text-sm font-bold text-ink">Meu perfil</p>
 
-      {active === 'perfil' ? (
-        <span className={itemClass(true)} aria-current="page">
-          Dados do perfil
-        </span>
-      ) : (
-        <span className={staticItem}>Dados do perfil</span>
-      )}
+      <Link
+        to="/profile"
+        className={itemClass(active === 'perfil')}
+        aria-current={active === 'perfil' ? 'page' : undefined}
+      >
+        Dados do perfil
+      </Link>
 
-      <Link to="/wallets" className={itemClass(active === 'carteiras')}>
+      <Link
+        to="/wallets"
+        className={itemClass(active === 'carteiras')}
+        aria-current={active === 'carteiras' ? 'page' : undefined}
+      >
         Carteiras
       </Link>
 

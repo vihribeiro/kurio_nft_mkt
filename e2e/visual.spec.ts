@@ -44,6 +44,7 @@ const screenshot = { fullPage: true, animations: 'disabled', maxDiffPixelRatio: 
 
 test.describe('regressão visual', () => {
   test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
     await seedScenario(page, 'frozen-prices')
   })
 

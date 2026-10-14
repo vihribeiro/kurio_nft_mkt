@@ -23,14 +23,14 @@ Complementa, sem substituir:
 | Tipos                                   | ✅                           | `npx tsc -b` sem erros                             |
 | Lint                                    | ✅                           | `npx eslint .` sem avisos                          |
 | Formatação                              | ✅                           | `npm run format:check` limpo                       |
-| Testes E2E                              | ✅ 154 passam · 8 pulados    | `npx playwright test` (desktop + mobile; 81 casos) |
+| Testes E2E                              | ✅ 161 passam · 9 pulados    | `npx playwright test` (desktop + mobile; 85 casos) |
 | Lighthouse (a11y / boas práticas / SEO) | 100 / 100 / 100              | mediana de 3 execuções por tela/perfil             |
 | Lighthouse (performance)                | 98/98 desktop · 78/76 mobile | mediana de 3 execuções por tela/perfil             |
 | Deploy                                  | ✅                           | produção na Vercel, deep link + F5 verificados     |
 
-> As 8 execuções puladas são específicas de viewport: cinco testes de navegação/
-> foco exclusivos de desktop no mobile, a busca global no mobile e os dois testes
-> do hero mobile no desktop. Ver §16.
+> As 9 execuções puladas são específicas de viewport: quatro testes de foco de
+> diálogos e três controles de navegação/busca desktop no mobile, mais um teste de
+> carrossel específico de cada viewport. Ver §16.
 
 > A performance mobile fica abaixo da meta de 90 por causa do backend simulado
 > no navegador (MSW), obrigatório e no caminho crítico. Justificativa formal em
@@ -143,17 +143,17 @@ Extraído de `npm ls --depth=0` (versões **instaladas**, não as faixas do
     ├── favorites.spec.ts              # inclusão, remoção, persistência e rollback
     ├── guest-cart.spec.ts             # múltiplos itens, refresh e adoção no login
     ├── header-search.spec.ts          # resultados incrementais da lupa desktop
-    ├── hero-carousel.spec.ts          # slides e autoplay do hero mobile
+    ├── hero-carousel.spec.ts          # carrossel de destaques mobile e desktop
     ├── isolation.spec.ts              # isolamento na troca de usuário
     ├── keyboard.spec.ts               # login/cadastro/recibo e foco preso no desktop
-    ├── layout.spec.ts                 # overflow, menu ativo e faixa footer 100/101
+    ├── layout.spec.ts                 # overflow, menu/Entrar e footer 100/101
     ├── profile.spec.ts                # edição de perfil, senha e avatar
-    ├── purchase.spec.ts               # pedido terminal, refresh/reconnect e replay idempotente
+    ├── purchase.spec.ts               # carrinho, carteiras do checkout, pedido e replay
     ├── realtime.spec.ts               # versão, preço/listing do carrinho e reconnect
     ├── session-expiry.spec.ts         # expiração na navegação e checkout
     ├── skeletons.spec.ts              # loading, offline e retry
     ├── visual.spec.ts                 # baselines de 4 telas × 2 viewports
-    ├── wallets.spec.ts                # cadastro/edição/remoção de carteiras
+    ├── wallets.spec.ts                # menu do perfil + CRUD de carteiras
     ├── support/mock.ts                # cenários e controles do MSW
     └── support/session.ts             # login, logout e fluxo do carrinho
 ```
@@ -550,8 +550,8 @@ inválido).
 
 Rodam contra o **bundle de produção** (`build` + `preview`) — única forma de
 provar deep link, refresh e o rewrite de SPA. Projetos: `desktop` (1440×900) e
-`mobile` (Pixel 5). **81 casos × 2 projetos = 162 execuções**; no último
-resultado, 154 passaram e 8 foram puladas por viewport (diálogos/menu desktop
+`mobile` (Pixel 5). **85 casos × 2 projetos = 170 execuções**; no último
+resultado, 161 passaram e 9 foram puladas por viewport (diálogos/menu desktop
 no mobile e busca/carrossel exclusivos de um dos perfis).
 
 ### 16.1 Mapa de cobertura (fluxo → arquivo)
@@ -583,11 +583,15 @@ no mobile e busca/carrossel exclusivos de um dos perfis).
 | 23  | Carrinho visitante: múltiplos itens, refresh e adoção no login  | `guest-cart.spec.ts`                          |
 | 24  | Busca desktop com blur, resultados por digitação e navegação    | `header-search.spec.ts`                       |
 | 25  | Hero mobile com três slides, dois NFTs e dots funcionais        | `hero-carousel.spec.ts`                       |
-| 26  | Hero mobile avança sozinho da direita para a esquerda           | `hero-carousel.spec.ts`                       |
-| 27  | Toast do carrinho não bloqueia navegação mobile                 | `guest-cart.spec.ts`                          |
-| 28  | **Mercado selecionado mantém underline desktop de 4px**         | `layout.spec.ts`                              |
-| 29  | **Compartilhamento do detalhe segue os ícones do Figma**        | `catalog.spec.ts`                             |
-| 30  | **Footer une diferenciais e newsletter como os frames 100/101** | `layout.spec.ts`                              |
+| 26  | Hero avança sozinho em mobile e desktop                         | `hero-carousel.spec.ts`                       |
+| 27  | Hero desktop alterna os três destaques pelos indicadores        | `hero-carousel.spec.ts`                       |
+| 28  | Toast do carrinho não bloqueia navegação mobile                 | `guest-cart.spec.ts`                          |
+| 29  | **Mercado selecionado mantém underline desktop de 4px**         | `layout.spec.ts`                              |
+| 30  | **Compartilhamento do detalhe segue os ícones do Figma**        | `catalog.spec.ts`                             |
+| 31  | **Footer une diferenciais e newsletter como os frames 100/101** | `layout.spec.ts`                              |
+| 32  | Botão Entrar desktop segue medidas e ícone Login do Figma       | `layout.spec.ts`                              |
+| 33  | Menu alterna entre Dados do perfil e Carteiras                  | `wallets.spec.ts`                             |
+| 34  | Carteiras do checkout seguem frame e atualizam o endereço       | `purchase.spec.ts`                            |
 
 Os itens em **negrito** foram acrescentados durante esta rodada. O cruzamento
 abaixo usa os 12 cenários literais do
@@ -627,12 +631,12 @@ evidência E2E e limites da simulação identificados.
 | `catalog.spec.ts`         |      6 | lista, tempo real, detalhe, share, 404, deep link               |
 | `catalog-filters.spec.ts` |      4 | filtro combinado, paginação, histórico e resposta fora de ordem |
 | `header-search.spec.ts`   |      1 | overlay com busca incremental e seleção de resultado            |
-| `hero-carousel.spec.ts`   |      2 | três pares e avanço automático no carrossel mobile              |
-| `purchase.spec.ts`        |      6 | carrinho, recibo terminal, replay e retomada após reconnect     |
+| `hero-carousel.spec.ts`   |      3 | slides mobile/desktop, indicadores e avanço automático          |
+| `purchase.spec.ts`        |      7 | carrinho, seletor de carteiras, recibo, replay e retomada       |
 | `guest-cart.spec.ts`      |      3 | vários itens, toast, refresh e adoção no login                  |
 | `auth.spec.ts`            |      9 | login, cadastro, redirect, sessão, isolamento do carrinho       |
 | `profile.spec.ts`         |      6 | nome, handle, senha (sucesso/erro), avatar                      |
-| `wallets.spec.ts`         |      5 | adicionar, principal, renomear, remover                         |
+| `wallets.spec.ts`         |      6 | menu de conta, adicionar, principal, renomear, remover          |
 | `coupon.spec.ts`          |      4 | cupons válidos, inválido, expirado                              |
 | `favorites.spec.ts`       |      5 | otimista, persistência no F5, rollback                          |
 | `checkout-errors.spec.ts` |      5 | validação, 502, recusada, desconexão e timeout idempotente      |
@@ -642,7 +646,7 @@ evidência E2E e limites da simulação identificados.
 | `keyboard.spec.ts`        |      4 | focus trap login/cadastro/recibo (desktop)                      |
 | `isolation.spec.ts`       |      1 | favoritos + socket seguem a conta                               |
 | `skeletons.spec.ts`       |      4 | shimmer, falha de rede e retry                                  |
-| `layout.spec.ts`          |      5 | overflow, menu ativo e footer/newsletter                        |
+| `layout.spec.ts`          |      6 | overflow, menu ativo, botão Entrar Figma, footer/newsletter     |
 | `visual.spec.ts`          |      4 | regressão visual versionada                                     |
 
 ### 16.3 Ajuda de teste
@@ -663,7 +667,7 @@ evidência E2E e limites da simulação identificados.
 ### 16.4 Resultado
 
 ```text
-154 passed, 8 skipped (1.9m)
+161 passed, 9 skipped (2.1m)
 ```
 
 ---
@@ -938,7 +942,7 @@ confirmar/ajustar, veja **Vercel → Project → Settings → Deployment Protect
 npm ci
 npm run build
 npx playwright install chromium
-npm run e2e                                                     # 154 passed, 8 skipped
+npm run e2e                                                     # 161 passed, 9 skipped
 npm run format:check && npx tsc -b && npx eslint .
 ```
 
@@ -992,8 +996,8 @@ de que exigiriam um provedor externo; não simulam sucesso.
 Conferência final baseada no README oficial e nos 12 cenários da seção 16:
 catálogo, URL, persistência por usuário, eventos `nft.updated`/`order.updated`,
 checkout terminal, idempotência, reconnect, formulários e condições de rede
-estão implementados e cobertos por E2E. No último resultado, 154 execuções
-passaram e 8 foram puladas por viewport.
+estão implementados e cobertos por E2E. No último resultado, 161 execuções
+passaram e 9 foram puladas por viewport.
 
 Limites da simulação estão descritos em §16.1.2: não há integração real de
 carteira/blockchain/pagamento, e login social/recuperação exibem aviso em vez de

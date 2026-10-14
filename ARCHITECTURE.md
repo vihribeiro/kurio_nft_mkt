@@ -286,6 +286,10 @@ lê `GET /cart`, e toda escrita devolve o carrinho já recalculado.
   intenção (retry/duplo clique/refresh devolvem o **mesmo** pedido, não um
   novo). O servidor valida a carteira, calcula o total, cria o pedido e
   **esvazia o carrinho**.
+- **Carteira no checkout**: as opções vêm de `GET /wallets`. A seleção define o
+  endereço enviado em `walletAddress`; a rede escolhida segue separadamente no
+  pedido. O recibo resolve o rótulo da carteira pelo endereço. Os nomes e ícones
+  dos provedores são apresentação do mock, sem conexão real a extensões.
 
 ### Hooks
 

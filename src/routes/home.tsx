@@ -41,7 +41,7 @@ const TABS: { value: CatalogTab; label: string }[] = [
   { value: 'alta', label: 'Em alta' },
 ]
 
-const MOBILE_HERO_SLIDES = [
+const HERO_SLIDES = [
   {
     primary: { image: '/art/art-2.webp', alt: 'Emerald Ape #042' },
     secondary: { image: '/art/art-1.webp', alt: 'Sage Nomad #009' },
@@ -403,22 +403,21 @@ function MobileCatalogBar({
   )
 }
 
-/** Faixa de abertura: no celular é um cartão; no desktop, texto + arte. */
+/** Faixa de abertura: composição própria em mobile e desktop, com o mesmo carrossel. */
 function HeroSection() {
   const [activeSlide, setActiveSlide] = useState(0)
   const [paused, setPaused] = useState(false)
-  const isDesktop = useIsDesktop()
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
   useEffect(() => {
-    if (isDesktop || paused || prefersReducedMotion) return
+    if (paused || prefersReducedMotion) return
 
     const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % MOBILE_HERO_SLIDES.length)
+      setActiveSlide((current) => (current + 1) % HERO_SLIDES.length)
     }, 5_000)
 
     return () => window.clearInterval(timer)
-  }, [isDesktop, paused, prefersReducedMotion])
+  }, [paused, prefersReducedMotion])
 
   return (
     <>
@@ -459,12 +458,12 @@ function HeroSection() {
                   transform: `translateX(-${activeSlide * 100}%)`,
                 }}
               >
-                {MOBILE_HERO_SLIDES.map((slide, index) => (
+                {HERO_SLIDES.map((slide, index) => (
                   <div
                     key={slide.primary.alt}
                     role="group"
                     aria-roledescription="slide"
-                    aria-label={`${index + 1} de ${MOBILE_HERO_SLIDES.length}`}
+                    aria-label={`${index + 1} de ${HERO_SLIDES.length}`}
                     aria-hidden={activeSlide !== index}
                     className="w-full shrink-0"
                   >
@@ -513,7 +512,7 @@ function HeroSection() {
               aria-label="Navegação dos destaques"
               className="relative z-10 mt-4 flex justify-center gap-0"
             >
-              {MOBILE_HERO_SLIDES.map((item, index) => (
+              {HERO_SLIDES.map((item, index) => (
                 <button
                   key={item.primary.alt}
                   type="button"
@@ -538,7 +537,19 @@ function HeroSection() {
       </section>
 
       {/* Desktop */}
-      <section className="hidden border-b border-line md:block">
+      <section
+        data-testid="desktop-hero"
+        aria-label="Destaques da Kurio"
+        aria-roledescription="carousel"
+        className="hidden border-b border-line md:block"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={(event) => {
+          const next = event.relatedTarget
+          if (!(next instanceof Node) || !event.currentTarget.contains(next)) setPaused(false)
+        }}
+      >
         <div className="mx-auto grid w-full max-w-page items-center gap-10 px-5 py-12 lg:grid-cols-[1fr_auto] lg:py-16">
           <div className="max-w-2xl">
             <p className="text-sm text-ink-subtle">Bem-vindo à Kurio</p>
@@ -552,15 +563,59 @@ function HeroSection() {
             <Button asChild className="mt-7 h-11 px-6 text-sm font-bold">
               <a href="#catalogo">Explorar</a>
             </Button>
+
+            <div
+              role="group"
+              aria-label="Navegação dos destaques"
+              className="mt-8 flex max-w-2xl justify-center gap-0"
+            >
+              {HERO_SLIDES.map((slide, index) => (
+                <button
+                  key={slide.primary.alt}
+                  type="button"
+                  aria-label={`Mostrar destaque ${index + 1}: ${slide.primary.alt}`}
+                  aria-pressed={activeSlide === index}
+                  onClick={() => setActiveSlide(index)}
+                  className="flex size-6 items-center justify-center rounded-full"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'size-2 rounded-full transition-colors',
+                      activeSlide === index ? 'bg-brand' : 'bg-ink-subtle/40 hover:bg-ink-subtle',
+                    )}
+                  />
+                  <span className="sr-only">Destaque {index + 1}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <img
-            src="/art/art-2.webp"
-            alt="Obra em destaque da coleção"
-            width={1254}
-            height={1254}
-            className="hidden size-[380px] rounded-3xl object-cover lg:block"
-          />
+          <div className="relative w-full max-w-[380px] justify-self-end overflow-hidden rounded-3xl">
+            <div
+              className="flex transition-transform duration-500 ease-in-out motion-reduce:transition-none"
+              style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+            >
+              {HERO_SLIDES.map((slide, index) => (
+                <div
+                  key={slide.primary.alt}
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`${index + 1} de ${HERO_SLIDES.length}`}
+                  aria-hidden={activeSlide !== index}
+                  className="w-full shrink-0"
+                >
+                  <img
+                    src={slide.primary.image}
+                    alt={slide.primary.alt}
+                    width={1254}
+                    height={1254}
+                    className="block aspect-square w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     </>

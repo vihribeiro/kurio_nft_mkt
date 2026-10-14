@@ -53,6 +53,75 @@ test.describe('carrinho e compra', () => {
     await expect(page).toHaveURL(/\/checkout$/)
   })
 
+  test('carteiras seguem o frame e a seleção atualiza o endereço usado no checkout', async ({
+    page,
+    isMobile,
+  }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'kurio:mock-wallets',
+        JSON.stringify({
+          'user-alice': [
+            {
+              id: 'wallet-walletconnect',
+              label: 'WalletConnect',
+              address: '0x1111111111111111111111111111111111111111',
+              chain: 'Ethereum',
+              balanceEth: '2.000',
+              isPrimary: false,
+            },
+            {
+              id: 'wallet-metamask',
+              label: 'MetaMask',
+              address: '0x2222222222222222222222222222222222222222',
+              chain: 'Ethereum',
+              balanceEth: '1.000',
+              isPrimary: false,
+            },
+            {
+              id: 'wallet-coinbase',
+              label: 'Coinbase Wallet',
+              address: '0x3333333333333333333333333333333333333333',
+              chain: 'Ethereum',
+              balanceEth: '3.000',
+              isPrimary: true,
+            },
+          ],
+        }),
+      )
+    })
+
+    await addToCart(page, 'emerald-ape-042')
+    await page.getByRole('link', { name: 'Conectar e finalizar' }).click()
+    await submitLogin(page)
+
+    const walletOptions = page.getByRole('group', { name: 'Carteira e rede' })
+    await expect(walletOptions.getByRole('radio')).toHaveCount(3)
+    await expect(walletOptions.getByRole('radio', { name: 'Coinbase Wallet' })).toBeChecked()
+    const viewportWidth = page.viewportSize()!.width
+    const optionsBounds = await walletOptions.boundingBox()
+    const firstOptionBounds = await walletOptions.locator('label').first().boundingBox()
+    expect(optionsBounds?.width).toBe(isMobile ? viewportWidth - 56 : 404)
+    expect(firstOptionBounds?.height).toBe(isMobile ? 65 : 44)
+    const confirmBounds = await page.getByRole('button', { name: 'Confirmar compra' }).boundingBox()
+    expect(confirmBounds?.width).toBe(optionsBounds?.width)
+    expect(confirmBounds?.height).toBe(isMobile ? 60 : 45)
+    await expect(page.getByLabel('Endereço da carteira *')).toHaveValue(
+      '0x3333333333333333333333333333333333333333',
+    )
+
+    if (isMobile) {
+      await expect(walletOptions.getByText('WalletConnect', { exact: true })).toBeVisible()
+    } else {
+      await expect(walletOptions.getByText('WALLETCONNECT', { exact: true })).toBeVisible()
+    }
+
+    await walletOptions.getByRole('radio', { name: 'MetaMask' }).check()
+    await expect(page.getByLabel('Endereço da carteira *')).toHaveValue(
+      '0x2222222222222222222222222222222222222222',
+    )
+  })
+
   test('a compra confirmada vem do servidor, com código e total', async ({ page }) => {
     test.setTimeout(12_000)
     let orderRequest: Record<string, unknown> | undefined
@@ -66,6 +135,7 @@ test.describe('carrinho e compra', () => {
     await page.getByRole('link', { name: 'Conectar e finalizar' }).click()
     await submitLogin(page)
 
+    await page.getByRole('radio', { name: 'Ledger Nano' }).check()
     await page.getByLabel('Nome de exibição *').fill('Alice da Floresta')
     await page.getByLabel('E-mail *').fill('alice.checkout@jungle.dev')
     await page.getByLabel('Rede', { exact: true }).selectOption('Polygon')
@@ -86,6 +156,7 @@ test.describe('carrinho e compra', () => {
     await expect(page.getByTestId('order-network')).toHaveText('Polygon')
 
     expect(orderRequest).toBeDefined()
+    expect(orderRequest?.walletAddress).toBe('0xC3a90B7d21E6f845A0c1E9b4D7f230A6852c19F4')
     const replay = await replayOrder(page, orderRequest!)
     expect(replay.status).toBe(200)
     expect(replay.body.id).toBe(new URL(page.url()).pathname.split('/').at(-1))

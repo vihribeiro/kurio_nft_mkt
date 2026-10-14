@@ -15,7 +15,6 @@ import { useCart } from '@/hooks/use-cart'
 import { apiErrorCode, apiErrorMessage } from '@/shared/api/errors'
 import { queryKeys } from '@/shared/api/query-keys'
 import { formatEth } from '@/shared/lib/pricing'
-import { shortAddress } from '@/shared/lib/address'
 
 /**
  * Pagamento.
@@ -207,7 +206,7 @@ export function CheckoutScreen() {
                 aria-label="Rede"
                 value={network}
                 onChange={(event) => setNetwork(event.target.value)}
-                className="mt-2 h-10 w-full rounded-md border border-field bg-surface-raised px-3 text-sm text-ink"
+                className="mt-2 h-10 w-full rounded-md border border-field bg-canvas px-3 text-sm text-ink"
               >
                 {[
                   ...new Set([selectedWallet?.chain ?? 'Ethereum', 'Ethereum', 'Polygon', 'Base']),
@@ -226,7 +225,7 @@ export function CheckoutScreen() {
             <ReadOnlyField
               id="walletAddress"
               label="Endereço da carteira *"
-              value={user?.walletAddress ?? ''}
+              value={selectedWallet?.address ?? user?.walletAddress ?? ''}
             />
             <EditableField
               id="ens"
@@ -272,7 +271,7 @@ export function CheckoutScreen() {
               rows={3}
               maxLength={500}
               placeholder="Alguma observação para este pedido?"
-              className="mt-2 w-full rounded-md border border-field bg-surface-raised px-3 py-2 text-sm text-ink placeholder:text-ink-subtle"
+              className="mt-2 w-full rounded-md border border-field bg-canvas px-3 py-2 text-sm text-ink placeholder:text-ink-subtle"
             />
             <p className="mt-1 text-xs text-ink-subtle">
               A observação será salva no snapshot deste pedido.
@@ -282,12 +281,12 @@ export function CheckoutScreen() {
 
         {/* Seus NFTs + pagamento */}
         <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-xl border border-line bg-surface p-6">
+          <div className="p-6">
             <h2 className="text-base font-bold text-ink">Seus NFTs</h2>
 
             <ul className="mt-4 space-y-3">
               {items.map((item) => (
-                <li key={item.nftId} className="flex items-center gap-3">
+                <li key={item.nftId} className="flex items-center gap-3 bg-surface">
                   <img
                     src={item.imageUrl}
                     alt={item.name}
@@ -340,54 +339,74 @@ export function CheckoutScreen() {
             </dl>
 
             {/* Carteira de pagamento */}
-            <fieldset className="mt-6">
-              <legend className="text-sm font-bold text-ink">Carteira</legend>
-              <div className="mt-3 space-y-2">
+            <fieldset className="-mx-[17px] mt-6 w-[calc(100%+34px)]">
+              <legend className="w-full text-left text-sm font-bold text-ink md:text-center">
+                Carteira e rede
+              </legend>
+              <div className="mt-3 space-y-4">
                 {walletsQuery.isPending ? (
-                  <div className="h-12 shimmer rounded-md" />
+                  <div className="h-16 shimmer rounded-[15px] md:h-11 md:rounded-[3px]" />
                 ) : wallets.length === 0 ? (
                   <p className="text-sm text-ink-subtle">Nenhuma carteira conectada.</p>
                 ) : (
                   wallets.map((wallet) => (
                     <label
                       key={wallet.id}
-                      className="flex cursor-pointer items-center gap-3 rounded-md border border-field bg-surface-raised px-3 py-2.5"
+                      className={`flex h-[65px] cursor-pointer items-center gap-3 rounded-[15px] border border-transparent bg-surface px-3.5 transition-colors md:h-11 md:rounded-[3px] md:bg-transparent md:px-3 ${
+                        selectedWallet?.id === wallet.id ? 'md:border-brand' : 'md:border-field'
+                      }`}
                     >
                       <input
                         type="radio"
                         name="wallet"
                         value={wallet.id}
+                        aria-label={wallet.label}
                         checked={selectedWallet?.id === wallet.id}
                         onChange={() => {
                           setSelectedWalletId(wallet.id)
                           setWalletConnected(true)
                         }}
-                        className="accent-brand"
+                        className="order-3 ml-auto size-4 shrink-0 accent-brand md:order-1 md:ml-0"
                       />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm text-ink">{wallet.label}</span>
-                        <span className="block truncate text-xs text-ink-subtle">
-                          {wallet.chain} · {shortAddress(wallet.address)}
+                      <WalletOptionMark label={wallet.label} />
+                      <span className="min-w-0 flex-1 md:order-2">
+                        <span className="block truncate text-sm text-ink md:hidden">
+                          {wallet.label}
                         </span>
-                      </span>
-                      <span className="whitespace-nowrap text-xs text-ink-subtle">
-                        {formatEth(wallet.balanceEth)} ETH
+                        {isWalletConnect(wallet.label) ? (
+                          <span className="hidden h-[25px] items-center gap-2 rounded-[5px] bg-surface-overlay px-2 text-[9px] font-bold tracking-wide text-brand md:inline-flex">
+                            <span>METAMASK</span>
+                            <span aria-hidden="true">·</span>
+                            <span>WALLETCONNECT</span>
+                            <span aria-hidden="true">·</span>
+                            <span>COINBASE</span>
+                          </span>
+                        ) : (
+                          <span className="hidden truncate text-sm text-ink md:block">
+                            {wallet.label}
+                          </span>
+                        )}
                       </span>
                     </label>
                   ))
                 )}
               </div>
-              {selectedWallet ? (
+              {selectedWallet && walletConnected ? (
+                <p role="status" className="sr-only">
+                  Carteira conectada
+                </p>
+              ) : null}
+              {selectedWallet && !walletConnected ? (
                 <div className="mt-3 flex items-center justify-between gap-3">
                   <p role="status" className="text-xs text-ink-subtle">
-                    {walletConnected ? 'Carteira conectada' : 'Carteira desconectada'}
+                    Carteira desconectada
                   </p>
                   <button
                     type="button"
-                    onClick={() => setWalletConnected((connected) => !connected)}
+                    onClick={() => setWalletConnected(true)}
                     className="text-xs font-medium text-brand underline-offset-2 hover:underline"
                   >
-                    {walletConnected ? 'Desconectar carteira' : 'Reconectar carteira'}
+                    Reconectar carteira
                   </button>
                 </div>
               ) : null}
@@ -448,7 +467,7 @@ export function CheckoutScreen() {
                 isStale ||
                 isUnavailable
               }
-              className="mt-6 h-11 w-full font-bold"
+              className="-mx-[17px] mt-6 h-[60px] w-[calc(100%+34px)] rounded-[30px] font-bold md:h-[45px] md:rounded-[8px]"
             >
               {createOrderMutation.isPending ? 'Confirmando…' : 'Confirmar compra'}
             </Button>
@@ -482,9 +501,49 @@ function ReadOnlyField({
         value={value}
         readOnly
         placeholder={placeholder}
-        className="mt-2 h-10 w-full rounded-md border border-field bg-surface-raised px-3 text-sm text-ink placeholder:text-ink-subtle"
+        className="mt-2 h-10 w-full rounded-md border border-field bg-canvas px-3 text-sm text-ink placeholder:text-ink-subtle"
       />
     </div>
+  )
+}
+
+function isWalletConnect(label: string): boolean {
+  return label
+    .toLowerCase()
+    .replace(/[^a-z]/g, '')
+    .includes('walletconnect')
+}
+
+function WalletOptionMark({ label }: { label: string }) {
+  const normalized = label.toLowerCase()
+
+  return (
+    <span
+      aria-hidden="true"
+      className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface-raised text-xs font-bold text-brand md:hidden"
+    >
+      {normalized.includes('coinbase') ? (
+        <svg
+          viewBox="0 0 24 24"
+          className="size-[18px]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3.5" y="6" width="17" height="13" rx="3" />
+          <path d="M3.5 10h17" />
+          <path d="M16 14h.01" />
+        </svg>
+      ) : normalized.includes('metamask') ? (
+        'M'
+      ) : normalized.includes('walletconnect') ? (
+        'W'
+      ) : (
+        label.trim().charAt(0).toUpperCase()
+      )}
+    </span>
   )
 }
 
@@ -525,7 +584,7 @@ function EditableField({
         aria-required={required}
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`mt-2 h-10 w-full rounded-md border bg-surface-raised px-3 text-sm text-ink placeholder:text-ink-subtle ${error ? 'border-danger' : 'border-field'}`}
+        className={`mt-2 h-10 w-full rounded-md border bg-canvas px-3 text-sm text-ink placeholder:text-ink-subtle ${error ? 'border-danger' : 'border-field'}`}
       />
       {error ? (
         <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-danger">

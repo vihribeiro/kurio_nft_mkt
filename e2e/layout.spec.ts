@@ -80,6 +80,36 @@ test.describe('layout responsivo', () => {
       .toBe('4px')
   })
 
+  test('botão Entrar segue as medidas e o ícone do elemento Login do Figma', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, 'o botão de entrar aparece no cabeçalho desktop')
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/')
+
+    const login = page.getByRole('link', { name: 'Entrar' })
+    await expect(login).toHaveAttribute('href', '/login')
+    const icon = login.locator('svg')
+    await expect(icon).toBeVisible()
+    await expect(icon).toHaveAttribute('viewBox', '1230 32 18 18')
+    await expect(icon.locator('path')).toHaveCount(3)
+    await expect(icon).toHaveCSS('color', 'rgb(20, 13, 10)')
+    const iconBounds = await icon.boundingBox()
+    expect(iconBounds?.width).toBe(18)
+    expect(iconBounds?.height).toBe(18)
+
+    const bounds = await login.boundingBox()
+    expect(bounds?.width).toBe(100)
+    expect(bounds?.height).toBe(35)
+    await expect(login).toHaveCSS('border-radius', '6px')
+    await expect(login).toHaveCSS('background-color', 'rgb(210, 138, 76)')
+    await expect(login).toHaveCSS('font-size', '12px')
+
+    await login.click()
+    await expect(page).toHaveURL(/\/login$/)
+  })
+
   test('destaques e newsletter seguem os frames 100/101 do footer', async ({ page }) => {
     if (test.info().project.name === 'desktop') {
       await page.setViewportSize({ width: 1440, height: 900 })

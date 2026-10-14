@@ -17,6 +17,30 @@ test.describe('carteiras', () => {
     await page.goto('/wallets')
   })
 
+  test('menu permite alternar entre Carteiras e Dados do perfil', async ({ page }) => {
+    const menu = page.getByRole('navigation', { name: 'Minha conta' })
+    const profileLink = menu.getByRole('link', { name: 'Dados do perfil' })
+    const walletsLink = menu.getByRole('link', { name: 'Carteiras' })
+
+    await expect(profileLink).toBeEnabled()
+    await expect(walletsLink).toHaveAttribute('aria-current', 'page')
+    await profileLink.click()
+
+    await expect(page).toHaveURL(/\/profile$/)
+    await expect(menu.getByRole('link', { name: 'Dados do perfil' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+
+    await menu.getByRole('link', { name: 'Carteiras' }).click()
+    await expect(page).toHaveURL(/\/wallets$/)
+    await expect(menu.getByRole('link', { name: 'Dados do perfil' })).toBeEnabled()
+    await expect(menu.getByRole('link', { name: 'Carteiras' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+  })
+
   test('conectar uma carteira nova adiciona à lista', async ({ page }) => {
     await page.getByRole('button', { name: 'Adicionar' }).click()
     await page.getByLabel('Apelido *', { exact: true }).fill('Minha Ledger')
