@@ -14,10 +14,7 @@ coverage
 # Referência local do Figma (não vai para o repositório)
 reference/
 
-# Notas e material interno de desenvolvimento
-ARCHITECTURE.md
-VERIFICACAO.md
-docs/
+# Utilitários locais de desenvolvimento (não necessários para executar o app)
 scripts/
 
 # Relatórios de teste

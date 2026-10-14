@@ -1,0 +1,62 @@
+{
+  "inicio-desktop": {
+    "performance": 98,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "fcp": 0.70847,
+    "lcp": 0.9706420000000001,
+    "tbt": 0,
+    "cls": 0.003480409771473601,
+    "clsRuns": [
+      0.003480409771473601,
+      0.003480409771473601,
+      0.003480409771473601
+    ]
+  },
+  "inicio-mobile": {
+    "performance": 78,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "fcp": 3.5006552,
+    "lcp": 4.263319,
+    "tbt": 0,
+    "cls": 0,
+    "clsRuns": [
+      0,
+      0,
+      0
+    ]
+  },
+  "detalhe-desktop": {
+    "performance": 98,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "fcp": 0.7195262,
+    "lcp": 1.0732487000000002,
+    "tbt": 0,
+    "cls": 0,
+    "clsRuns": [
+      0,
+      0,
+      0
+    ]
+  },
+  "detalhe-mobile": {
+    "performance": 76,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "fcp": 3.342013,
+    "lcp": 4.597533999999999,
+    "tbt": 0.9999999999995453,
+    "cls": 0.01919303617592042,
+    "clsRuns": [
+      0.01919303617592042,
+      0.01919303617592042,
+      0.01919303617592042
+    ]
+  }
+}
