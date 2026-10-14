@@ -23,14 +23,14 @@ Complementa, sem substituir:
 | Tipos                                   | ✅                           | `npx tsc -b` sem erros                             |
 | Lint                                    | ✅                           | `npx eslint .` sem avisos                          |
 | Formatação                              | ✅                           | `npm run format:check` limpo                       |
-| Testes E2E                              | ✅ 161 passam · 9 pulados    | `npx playwright test` (desktop + mobile; 85 casos) |
+| Testes E2E                              | ✅ 162 passam · 10 pulados   | `npx playwright test` (desktop + mobile; 86 casos) |
 | Lighthouse (a11y / boas práticas / SEO) | 100 / 100 / 100              | mediana de 3 execuções por tela/perfil             |
 | Lighthouse (performance)                | 98/98 desktop · 78/76 mobile | mediana de 3 execuções por tela/perfil             |
 | Deploy                                  | ✅                           | produção na Vercel, deep link + F5 verificados     |
 
-> As 9 execuções puladas são específicas de viewport: quatro testes de foco de
-> diálogos e três controles de navegação/busca desktop no mobile, mais um teste de
-> carrossel específico de cada viewport. Ver §16.
+> As 10 execuções puladas são específicas de viewport: quatro testes de foco de
+> diálogos, busca/mercado/Entrar desktop no mobile, um teste de tab bar no desktop
+> e controles de carrossel específicos de cada viewport. Ver §16.
 
 > A performance mobile fica abaixo da meta de 90 por causa do backend simulado
 > no navegador (MSW), obrigatório e no caminho crítico. Justificativa formal em
@@ -550,8 +550,8 @@ inválido).
 
 Rodam contra o **bundle de produção** (`build` + `preview`) — única forma de
 provar deep link, refresh e o rewrite de SPA. Projetos: `desktop` (1440×900) e
-`mobile` (Pixel 5). **85 casos × 2 projetos = 170 execuções**; no último
-resultado, 161 passaram e 9 foram puladas por viewport (diálogos/menu desktop
+`mobile` (Pixel 5). **86 casos × 2 projetos = 172 execuções**; no último
+resultado, 162 passaram e 10 foram puladas por viewport (diálogos/menu desktop
 no mobile e busca/carrossel exclusivos de um dos perfis).
 
 ### 16.1 Mapa de cobertura (fluxo → arquivo)
@@ -592,6 +592,7 @@ no mobile e busca/carrossel exclusivos de um dos perfis).
 | 32  | Botão Entrar desktop segue medidas e ícone Login do Figma       | `layout.spec.ts`                              |
 | 33  | Menu alterna entre Dados do perfil e Carteiras                  | `wallets.spec.ts`                             |
 | 34  | Carteiras do checkout seguem frame e atualizam o endereço       | `purchase.spec.ts`                            |
+| 35  | Tab bar mobile segue geometria, ícones e navegação do Figma     | `layout.spec.ts`                              |
 
 Os itens em **negrito** foram acrescentados durante esta rodada. O cruzamento
 abaixo usa os 12 cenários literais do
@@ -646,7 +647,7 @@ evidência E2E e limites da simulação identificados.
 | `keyboard.spec.ts`        |      4 | focus trap login/cadastro/recibo (desktop)                      |
 | `isolation.spec.ts`       |      1 | favoritos + socket seguem a conta                               |
 | `skeletons.spec.ts`       |      4 | shimmer, falha de rede e retry                                  |
-| `layout.spec.ts`          |      6 | overflow, menu ativo, botão Entrar Figma, footer/newsletter     |
+| `layout.spec.ts`          |      7 | overflow, tab bar, menus/Entrar e footer/newsletter             |
 | `visual.spec.ts`          |      4 | regressão visual versionada                                     |
 
 ### 16.3 Ajuda de teste
@@ -667,7 +668,7 @@ evidência E2E e limites da simulação identificados.
 ### 16.4 Resultado
 
 ```text
-161 passed, 9 skipped (2.1m)
+162 passed, 10 skipped (2.1m)
 ```
 
 ---
@@ -942,7 +943,7 @@ confirmar/ajustar, veja **Vercel → Project → Settings → Deployment Protect
 npm ci
 npm run build
 npx playwright install chromium
-npm run e2e                                                     # 161 passed, 9 skipped
+npm run e2e                                                     # 162 passed, 10 skipped
 npm run format:check && npx tsc -b && npx eslint .
 ```
 
@@ -996,8 +997,8 @@ de que exigiriam um provedor externo; não simulam sucesso.
 Conferência final baseada no README oficial e nos 12 cenários da seção 16:
 catálogo, URL, persistência por usuário, eventos `nft.updated`/`order.updated`,
 checkout terminal, idempotência, reconnect, formulários e condições de rede
-estão implementados e cobertos por E2E. No último resultado, 161 execuções
-passaram e 9 foram puladas por viewport.
+estão implementados e cobertos por E2E. No último resultado, 162 execuções
+passaram e 10 foram puladas por viewport.
 
 Limites da simulação estão descritos em §16.1.2: não há integração real de
 carteira/blockchain/pagamento, e login social/recuperação exibem aviso em vez de

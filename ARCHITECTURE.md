@@ -388,8 +388,9 @@ Decisões de casco:
   chunk.
 - **Rodapé por página** (Início, Detalhe, Carrinho, Pagamento), não no layout
   raiz — Perfil/Carteiras/Login não o têm no Figma.
-- **Navegação no celular** é barra inferior; no desktop, no cabeçalho. A
-  navegação está sempre no DOM e é operável por teclado.
+- **Navegação no celular** é uma tab bar fixa com recorte central e ordem
+  Início/Favoritos/Carteiras/Carrinho/Perfil, baseada no SVG do Figma; no desktop,
+  fica no cabeçalho. Links mantêm nome acessível e estado `aria-current`.
 
 ## Acessibilidade e responsividade
 

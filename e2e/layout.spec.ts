@@ -80,6 +80,54 @@ test.describe('layout responsivo', () => {
       .toBe('4px')
   })
 
+  test('tab bar mobile segue forma, ordem e posições do frame do Figma', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, 'a tab bar existe apenas na composição mobile')
+    await page.setViewportSize({ width: 414, height: 896 })
+    await seedScenario(page, 'frozen-prices')
+    await login(page)
+    await page.goto('/')
+
+    const tabBar = page.getByRole('navigation', { name: 'Principal (celular)' })
+    const bounds = await tabBar.boundingBox()
+    expect(bounds?.width).toBe(414)
+    expect(bounds?.height).toBe(95)
+    expect(bounds?.y).toBe(801)
+
+    const home = tabBar.getByRole('link', { name: 'Início' })
+    const favorites = tabBar.getByRole('link', { name: 'Favoritos' })
+    const wallets = tabBar.getByRole('link', { name: 'Carteiras' })
+    const cart = tabBar.getByRole('link', { name: 'Carrinho' })
+    const profile = tabBar.getByRole('link', { name: 'Perfil' })
+
+    await expect(home).toHaveAttribute('aria-current', 'page')
+    await expect(wallets).toHaveAttribute('href', '/wallets')
+    await expect(cart).toHaveAttribute('href', '/cart')
+    await expect(tabBar.locator('ul > li')).toHaveCount(5)
+
+    const centers = await Promise.all(
+      [home, favorites, wallets, cart, profile].map(async (link) => {
+        const box = await link.boundingBox()
+        return box ? Math.round(box.x + box.width / 2) : NaN
+      }),
+    )
+    expect(centers).toEqual([46, 118, 207, 302, 364])
+
+    const walletButton = await wallets.boundingBox()
+    expect(walletButton?.width).toBe(65)
+    expect(walletButton?.height).toBe(65)
+    expect(walletButton?.y).toBe(770)
+
+    await wallets.click()
+    await expect(page).toHaveURL(/\/wallets$/)
+    await expect(wallets).toHaveAttribute('aria-current', 'page')
+
+    await cart.click()
+    await expect(page).toHaveURL(/\/cart$/)
+  })
+
   test('botão Entrar segue as medidas e o ícone do elemento Login do Figma', async ({
     page,
     isMobile,

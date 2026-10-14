@@ -6,7 +6,7 @@ ou banco de dados.
 
 - **Aplicação publicada:** https://kurio-nft-marketplace-chi.vercel.app
 - **Stack:** React, TypeScript, Vite, Tailwind CSS, TanStack Router/Query e MSW.
-- **Funcionalidades:** hero com carrossel mobile/desktop, catálogo com filtros e paginação, detalhe
+- **Funcionalidades:** hero e tab bar mobile fiéis ao Figma, catálogo com filtros e paginação, detalhe
   de NFT, favoritos, carrinho, checkout com carteiras da conta e rede selecionáveis, pedidos e perfil.
 - **Tempo real:** preços e disponibilidade simulados por Socket.IO.
 

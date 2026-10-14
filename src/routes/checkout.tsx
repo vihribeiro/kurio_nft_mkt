@@ -339,7 +339,7 @@ export function CheckoutScreen() {
             </dl>
 
             {/* Carteira de pagamento */}
-            <fieldset className="-mx-[17px] mt-6 w-[calc(100%+34px)]">
+            <fieldset className="-mx-4 mt-6 w-[calc(100%+32px)]">
               <legend className="w-full text-left text-sm font-bold text-ink md:text-center">
                 Carteira e rede
               </legend>
@@ -467,7 +467,7 @@ export function CheckoutScreen() {
                 isStale ||
                 isUnavailable
               }
-              className="-mx-[17px] mt-6 h-[60px] w-[calc(100%+34px)] rounded-[30px] font-bold md:h-[45px] md:rounded-[8px]"
+              className="-mx-4 mt-6 h-[60px] w-[calc(100%+32px)] rounded-[30px] font-bold md:h-[45px] md:rounded-[8px]"
             >
               {createOrderMutation.isPending ? 'Confirmando…' : 'Confirmar compra'}
             </Button>
