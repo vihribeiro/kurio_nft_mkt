@@ -14,6 +14,28 @@ test.describe('catálogo', () => {
     await expect(page.getByText('Aurora Relic #001')).toBeVisible()
   })
 
+  test('mostra RARO apenas nos cartões com atributo de raridade Rara', async ({ page }) => {
+    await page.goto('/')
+
+    const aurora = page.locator('article').filter({
+      has: page.getByRole('link', { name: /Aurora Relic #014/ }),
+    })
+    const notRare = page.locator('article').filter({
+      has: page.getByRole('link', { name: /Onyx Ape #007/ }),
+    })
+
+    const rareBadge = aurora.getByText('RARO', { exact: true })
+    await expect(rareBadge).toBeVisible()
+    await expect(notRare.getByText('RARO', { exact: true })).toHaveCount(0)
+
+    const badgeBounds = await rareBadge.boundingBox()
+    expect(badgeBounds?.width).toBe(68)
+    expect(badgeBounds?.height).toBe(32)
+    await expect(rareBadge).toHaveCSS('border-radius', '0px')
+    await expect(rareBadge).toHaveCSS('background-color', 'rgb(210, 138, 76)')
+    await expect(rareBadge).toHaveCSS('color', 'rgb(20, 13, 10)')
+  })
+
   test('o preço muda por tempo real, sem recarregar a página', async ({ page }) => {
     await page.goto('/')
 

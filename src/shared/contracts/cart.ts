@@ -13,6 +13,8 @@ export const cartItemSchema = z.object({
   name: z.string().min(1),
   collectionName: z.string().min(1),
   imageUrl: z.string().min(1),
+  /** Edição da obra, exibida no cartão do carrinho. Defaults mantêm carts antigos compatíveis. */
+  edition: z.string().min(1).optional().default('1 de 1'),
   priceEth: ethAmountSchema,
   quantity: quantitySchema,
   /** Versão do preço que originou este item — base da reconciliação. */

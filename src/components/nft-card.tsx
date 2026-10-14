@@ -16,16 +16,26 @@ export function NftCard({
   badge,
   priority = false,
 }: {
-  nft: Pick<Nft, 'id' | 'name' | 'imageUrl' | 'priceEth'>
+  nft: Pick<Nft, 'id' | 'name' | 'imageUrl' | 'priceEth' | 'traits'>
   /** Selo sobreposto à arte (ex.: "RARO"). */
   badge?: string
   priority?: boolean
 }) {
+  const badgeLabel =
+    badge ??
+    (nft.traits.some(
+      (trait) =>
+        trait.name.trim().toLowerCase() === 'raridade' &&
+        trait.value.trim().toLowerCase() === 'rara',
+    )
+      ? 'RARO'
+      : undefined)
+
   return (
     <article className="group relative flex flex-col">
-      {badge ? (
-        <span className="absolute left-3 top-3 z-10 rounded-md bg-brand px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
-          {badge}
+      {badgeLabel ? (
+        <span className="absolute -left-1 top-0 z-10 flex h-8 w-[68px] items-center justify-center bg-brand text-xs font-bold uppercase tracking-wide text-canvas">
+          {badgeLabel}
         </span>
       ) : null}
 

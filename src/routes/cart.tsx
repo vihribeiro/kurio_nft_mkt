@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { ChevronLeft, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Decimal } from 'decimal.js'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { MobileTopBar } from '@/components/mobile-top-bar'
 import { NftCard } from '@/components/nft-card'
 import { QtyStepper } from '@/components/qty-stepper'
 import { SiteFooter } from '@/components/site-footer'
@@ -110,7 +110,7 @@ export function CartScreen() {
 
   return (
     <div>
-      <div className="mx-auto w-full max-w-page px-5 pt-6">
+      <div className="mx-auto hidden w-full max-w-page px-5 pt-6 md:block xl:px-0">
         <Breadcrumbs
           items={[
             { label: 'Início', to: '/' },
@@ -120,12 +120,19 @@ export function CartScreen() {
         />
       </div>
 
-      <MobileTopBar title="Carrinho de NFTs" />
-      <h1 className="mx-auto hidden w-full max-w-page px-5 pt-4 text-2xl font-bold text-ink md:block">
-        Carrinho
-      </h1>
+      <div className="relative flex h-[72px] items-center justify-center px-7 pt-2 md:hidden">
+        <Link
+          to="/"
+          aria-label="Voltar"
+          className="absolute left-7 top-8 flex size-9 items-center justify-center rounded-full border border-line bg-surface text-ink-muted"
+        >
+          <ChevronLeft aria-hidden="true" className="size-5" />
+        </Link>
+        <span className="translate-y-[15px] text-xl font-bold text-ink">Carrinho de NFTs</span>
+      </div>
+      <h1 className="sr-only">Carrinho de NFTs</h1>
 
-      <section className="mx-auto grid w-full max-w-page gap-8 px-5 py-6 lg:grid-cols-[minmax(0,1fr)_332px]">
+      <section className="mx-auto grid w-full max-w-page grid-cols-1 gap-0 px-7 pb-[365px] pt-4 md:gap-8 md:px-5 md:py-6 lg:grid-cols-[minmax(0,1fr)_332px] xl:gap-[86px] xl:px-0">
         <div className="min-w-0">
           {isPending ? (
             <CartSkeleton />
@@ -144,21 +151,31 @@ export function CartScreen() {
               </Button>
             </div>
           ) : isDesktop ? (
-            <table className="w-full text-left">
+            <table className="w-full border-separate text-left [border-spacing:0_6px] md:relative md:top-[-9px]">
               <caption className="sr-only">Itens no carrinho</caption>
+              <colgroup>
+                <col className="w-[40%]" />
+                <col className="w-[17%]" />
+                <col className="w-[18%]" />
+                <col className="w-[18%]" />
+                <col className="w-[7%]" />
+              </colgroup>
               <thead>
-                <tr className="border-b border-line text-xs uppercase tracking-wide text-ink-subtle">
-                  <th scope="col" className="pb-3 font-medium">
+                <tr className="text-xs uppercase tracking-wide text-ink-subtle">
+                  <th scope="col" className="border-b border-line pb-3 font-medium">
                     NFTs
                   </th>
-                  <th scope="col" className="pb-3 font-medium">
+                  <th scope="col" className="border-b border-line pb-3 font-medium">
                     Preço
                   </th>
-                  <th scope="col" className="pb-3 font-medium">
+                  <th scope="col" className="border-b border-line pb-3 font-medium">
                     Edições
                   </th>
-                  <th scope="col" className="pb-3 text-right font-medium">
+                  <th scope="col" className="border-b border-line pb-3 text-right font-medium">
                     Total
+                  </th>
+                  <th scope="col" className="border-b border-line pb-3">
+                    <span className="sr-only">Ações</span>
                   </th>
                 </tr>
               </thead>
@@ -167,108 +184,109 @@ export function CartScreen() {
                   <tr
                     key={item.nftId}
                     data-testid={`cart-item-${item.nftId}`}
-                    className="border-b border-line align-middle"
+                    className="h-[70px] bg-surface"
                   >
-                    <td className="py-4">
-                      <div className="flex items-center gap-3">
+                    <td className="p-0">
+                      <div className="flex h-[70px] items-center gap-4">
                         <img
                           src={item.imageUrl}
                           alt={item.name}
                           width={1254}
                           height={1254}
-                          className="size-16 rounded-md object-cover"
+                          className="size-[70px] rounded-[6px] object-cover"
                         />
-                        <div>
+                        <div className="min-w-0">
                           <Link
                             to="/nft/$nftId"
                             params={{ nftId: item.nftId }}
                             className="text-sm font-medium text-ink hover:text-brand"
                           >
-                            {item.name}
+                            <span className="block truncate">{item.name}</span>
                           </Link>
-                          <p className="mt-1 text-xs text-ink-subtle">
+                          <p className="text-xs text-ink-subtle">
                             ID do token: {deriveTokenId(item.nftId)}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 text-sm text-ink">
+                    <td className="text-sm font-bold text-brand">
                       <span data-testid={`cart-price-${item.nftId}`}>
                         {formatEth(item.priceEth)} ETH
                       </span>
                     </td>
-                    <td className="py-4">
-                      <div className="flex items-center gap-3">
-                        <QtyStepper
-                          quantity={item.quantity}
-                          disabled={setQuantity.isPending}
-                          onChange={(next) => updateQuantity(item.nftId, next)}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => remove(item.nftId, item.name)}
-                          className="text-xs text-ink-subtle underline-offset-2 hover:text-danger hover:underline"
-                        >
-                          Remover
-                        </button>
-                      </div>
+                    <td>
+                      <QtyStepper
+                        quantity={item.quantity}
+                        disabled={setQuantity.isPending}
+                        onChange={(next) => updateQuantity(item.nftId, next)}
+                      />
                     </td>
-                    <td className="py-4 text-right text-sm font-bold text-ink">
+                    <td className="text-right text-sm font-bold text-brand">
                       {lineTotal(item.priceEth, item.quantity)} ETH
+                    </td>
+                    <td className="text-right">
+                      <button
+                        type="button"
+                        onClick={() => remove(item.nftId, item.name)}
+                        aria-label={`Remover ${item.name}`}
+                        className="inline-flex size-8 items-center justify-center text-ink-muted transition-colors hover:text-danger"
+                      >
+                        <Trash2 aria-hidden="true" className="size-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-5">
               {items.map((item) => (
                 <li
                   key={item.nftId}
                   data-testid={`cart-item-${item.nftId}`}
-                  className="flex items-center gap-3 rounded-2xl bg-surface p-3"
+                  className="group relative flex h-[100px] items-center gap-[7px] rounded-[14px] bg-surface pr-3"
                 >
                   <img
                     src={item.imageUrl}
                     alt={item.name}
                     width={1254}
                     height={1254}
-                    className="size-20 shrink-0 rounded-xl object-cover"
+                    className="size-[100px] shrink-0 rounded-[14px] object-cover"
                   />
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 self-stretch py-[12px] pr-[76px]">
                     <div className="flex items-start justify-between gap-2">
                       <Link
                         to="/nft/$nftId"
                         params={{ nftId: item.nftId }}
-                        className="truncate text-sm font-medium text-ink hover:text-brand"
+                        className="truncate text-sm font-bold text-ink hover:text-brand"
                       >
                         {item.name}
                       </Link>
-                      <span className="shrink-0 text-sm font-bold text-ink">
-                        {lineTotal(item.priceEth, item.quantity)} ETH
-                      </span>
                     </div>
-                    <p className="mt-0.5 text-xs text-ink-subtle">
-                      Edição: {item.quantity} ·{' '}
+                    <p className="mt-0.5 text-xs text-ink-muted">
+                      Edição: {item.edition.replace(/\s+de\s+/i, '/')}
+                    </p>
+                    <p className="mt-[14px] text-base font-bold text-brand">
                       <span data-testid={`cart-price-${item.nftId}`}>
                         {formatEth(item.priceEth)} ETH
                       </span>
                     </p>
-                    <div className="mt-2 flex items-center gap-3">
-                      <QtyStepper
-                        quantity={item.quantity}
-                        disabled={setQuantity.isPending}
-                        onChange={(next) => updateQuantity(item.nftId, next)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => remove(item.nftId, item.name)}
-                        className="text-xs text-ink-subtle underline-offset-2 hover:text-danger hover:underline"
-                      >
-                        Remover
-                      </button>
-                    </div>
                   </div>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 md:right-[calc(7%+8px)]">
+                    <QtyStepper
+                      quantity={item.quantity}
+                      disabled={setQuantity.isPending}
+                      onChange={(next) => updateQuantity(item.nftId, next)}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => remove(item.nftId, item.name)}
+                    aria-label={`Remover ${item.name}`}
+                    className="absolute right-3 top-3 flex size-6 items-center justify-center text-ink-muted opacity-0 transition-opacity hover:text-danger focus-visible:opacity-100 group-hover:opacity-100"
+                  >
+                    <Trash2 aria-hidden="true" className="size-4" />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -276,16 +294,21 @@ export function CartScreen() {
         </div>
 
         {/* Resumo da carteira */}
-        <aside aria-label="Resumo da carteira" className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-xl border border-line bg-surface p-6">
-            <h2 className="text-base font-bold text-ink">Resumo da carteira</h2>
+        <aside
+          aria-label="Resumo da carteira"
+          className="fixed inset-x-0 bottom-0 z-30 self-start rounded-t-[40px] bg-surface px-6 pb-5 pt-6 shadow-[0_-12px_30px_rgb(10_6_4_/_30%)] md:static md:rounded-none md:bg-transparent md:p-0 md:shadow-none"
+        >
+          <div className="mx-auto max-w-page md:mx-0 md:max-w-none">
+            <h2 className="hidden border-b border-line pb-2 text-base font-bold text-ink md:block">
+              Resumo da carteira
+            </h2>
 
             {isPending ? (
               <CartSummarySkeleton />
             ) : (
               <>
-                <div className="mt-4">
-                  <label htmlFor="promo-code" className="text-sm text-ink-subtle">
+                <div className="mt-0 lg:mt-4">
+                  <label htmlFor="promo-code" className="hidden text-sm text-ink-subtle md:block">
                     Código promocional
                   </label>
 
@@ -307,20 +330,20 @@ export function CartScreen() {
                     </div>
                   ) : (
                     <>
-                      <div className="mt-2 flex gap-2">
+                      <div className="mt-0 flex h-[50px] gap-0 md:mt-2 md:h-10 md:gap-2">
                         <input
                           id="promo-code"
                           placeholder="Digite o código promocional"
                           value={promoCode}
                           onChange={(event) => setPromoCode(event.target.value)}
-                          className="h-10 min-w-0 flex-1 rounded-md border border-field bg-surface-raised px-3 text-sm text-ink placeholder:text-ink-subtle"
+                          className="h-full min-w-0 flex-1 rounded-l-full border border-field bg-surface-raised px-3 text-xs text-ink placeholder:text-ink-subtle md:rounded-md md:text-sm"
                         />
                         <Button
                           type="button"
                           variant="outline"
                           onClick={() => apply(promoCode)}
                           disabled={applyCoupon.isPending || promoCode.trim().length === 0}
-                          className="h-10 border-field bg-transparent text-ink hover:bg-surface-raised"
+                          className="h-full w-[97px] shrink-0 rounded-r-full border-0 bg-brand px-2 text-sm font-bold text-canvas hover:bg-brand-strong md:w-auto md:rounded-md md:border-field md:bg-transparent md:text-ink md:hover:bg-surface-raised"
                         >
                           {applyCoupon.isPending ? 'Aplicando…' : 'Aplicar'}
                         </Button>
@@ -338,7 +361,7 @@ export function CartScreen() {
                   )}
                 </div>
 
-                <dl className="mt-6 space-y-3 text-sm">
+                <dl className="mt-3 space-y-2 text-sm md:mt-6 md:space-y-3">
                   <div className="flex items-center justify-between">
                     <dt className="text-ink-subtle">Subtotal</dt>
                     <dd data-testid="cart-subtotal" className="text-ink">
@@ -346,7 +369,7 @@ export function CartScreen() {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt className="text-ink-subtle">Desconto</dt>
+                    <dt className="text-ink-subtle">Desconto do lançamento</dt>
                     <dd data-testid="cart-discount" className="text-ink-subtle">
                       {Number(cart?.discountEth ?? '0') > 0
                         ? `(-) ${formatEth(cart!.discountEth)} ETH`
@@ -354,26 +377,37 @@ export function CartScreen() {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt className="text-ink-subtle">Taxa de rede (estimada)</dt>
-                    <dd data-testid="cart-fee" className="text-ink">
-                      {formatEth(cart?.serviceFeeEth ?? '0')} ETH
+                    <dt className="text-ink-subtle">Taxa de rede</dt>
+                    <dd className="flex flex-col items-end text-ink">
+                      <span data-testid="cart-fee">
+                        {formatEth(cart?.serviceFeeEth ?? '0')} ETH
+                      </span>
+                      <span className="text-[10px] text-brand">Taxa estimada</span>
                     </dd>
                   </div>
-                  <div className="flex items-center justify-between border-t border-line pt-3 text-base">
+                  <div className="flex items-center justify-between pt-0 text-base md:pt-[18px]">
                     <dt className="font-bold text-ink">Total</dt>
-                    <dd data-testid="cart-total" className="font-bold text-ink">
+                    <dd data-testid="cart-total" className="font-bold text-brand">
                       {formatEth(cart?.totalEth ?? '0')} ETH
                     </dd>
                   </div>
                 </dl>
 
-                <div className="mt-6 space-y-3">
+                <div className="mt-6 space-y-3 md:mt-5 md:space-y-1">
                   {status === 'authenticated' ? (
-                    <Button asChild className="h-11 w-full font-bold" disabled={items.length === 0}>
+                    <Button
+                      asChild
+                      className="h-[60px] w-full rounded-full font-bold md:h-10 md:rounded-[5px]"
+                      disabled={items.length === 0}
+                    >
                       <Link to="/checkout">Conectar e finalizar</Link>
                     </Button>
                   ) : (
-                    <Button asChild className="h-11 w-full font-bold" disabled={items.length === 0}>
+                    <Button
+                      asChild
+                      className="h-[60px] w-full rounded-full font-bold md:h-10 md:rounded-[5px]"
+                      disabled={items.length === 0}
+                    >
                       <Link to="/login" search={{ redirect: '/checkout' }}>
                         Conectar e finalizar
                       </Link>
@@ -390,12 +424,16 @@ export function CartScreen() {
                       })
                     }
                     disabled={quote.isPending || items.length === 0}
-                    className="w-full text-ink-subtle hover:text-ink"
+                    className="hidden w-full text-ink-subtle hover:text-ink"
                   >
                     {quote.isPending ? 'Recotando…' : 'Recotar preços'}
                   </Button>
 
-                  <Button asChild variant="ghost" className="w-full text-ink-subtle hover:text-ink">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="hidden w-full text-brand hover:text-brand-strong md:flex"
+                  >
                     <Link to="/">Continuar explorando</Link>
                   </Button>
                 </div>
@@ -408,7 +446,7 @@ export function CartScreen() {
       {suggestions.length > 0 ? (
         <section
           aria-labelledby="cart-suggestions"
-          className="mx-auto w-full max-w-page px-5 pb-12"
+          className="mx-auto hidden w-full max-w-page px-5 pb-12 pt-[96px] lg:block"
         >
           <h2 id="cart-suggestions" className="text-lg font-bold text-ink">
             Colecionadores também viram
@@ -423,7 +461,9 @@ export function CartScreen() {
         </section>
       ) : null}
 
-      <SiteFooter />
+      <div className="hidden md:block">
+        <SiteFooter />
+      </div>
     </div>
   )
 }

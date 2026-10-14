@@ -19,14 +19,17 @@ async function settle(page: Page): Promise<void> {
     // Rola até o fim para disparar o lazyload e espera toda imagem terminar.
     window.scrollTo(0, document.body.scrollHeight)
     await Promise.all(
-      Array.from(document.images).map((image) =>
-        image.complete
-          ? Promise.resolve()
-          : new Promise<void>((resolve) => {
-              image.addEventListener('load', () => resolve(), { once: true })
-              image.addEventListener('error', () => resolve(), { once: true })
-            }),
-      ),
+      Array.from(document.images)
+        // Imagens em seções ocultas por breakpoint não iniciam o lazyload.
+        .filter((image) => image.getClientRects().length > 0)
+        .map((image) =>
+          image.complete
+            ? Promise.resolve()
+            : new Promise<void>((resolve) => {
+                image.addEventListener('load', () => resolve(), { once: true })
+                image.addEventListener('error', () => resolve(), { once: true })
+              }),
+        ),
     )
     window.scrollTo(0, 0)
   })

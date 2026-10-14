@@ -141,8 +141,8 @@ controles usados pelos testes E2E: `/__mock__/expire-session`,
   couponCode: string | null,
   reservationId: string | null, expiresAt: string | null, updatedAt: string }
 
-// CartItem — guarda o preço do momento da entrada e a versão que o originou
-{ nftId, name, collectionName, imageUrl, priceEth: string, quantity: number, version: number }
+// CartItem — preço de entrada, edição exibida e versão que originou o preço
+{ nftId, name, collectionName, imageUrl, edition?: string, priceEth: string, quantity: number, version: number }
 
 // Order
 { id, code: "0x" + 12 hex, status: 'pending'|'settling'|'settled'|'failed',
@@ -371,7 +371,7 @@ pela UI (que exibe) — os dois precisam concordar.
 | ---------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `/`                    | Início               | Vitrine com filtros combinados, ordenação e paginação server-side (`PAGE_SIZE = 9`).                                 |
 | `/nft/:nftId`          | Detalhe              | Abas “Detalhes do NFT” / “Avaliações”; ação COMPRAR.                                                                 |
-| `/cart`                | Carrinho             | Tabela no desktop, cartões no celular; quantidade, cupom e resumo.                                                   |
+| `/cart`                | Carrinho             | Tabela no desktop; cartões de 100px e resumo fixo no mobile, que substitui a tab bar nesta rota.                     |
 | `/checkout`            | Pagamento            | Dados revisáveis, rede/carteira, resumo e pedido; bloqueia preço/disponibilidade obsoletos. Protegida.               |
 | `/order/:orderId`      | Confirmação          | **Rota endereçável.** Diálogo no desktop, página no celular. Confirma só em `settled`; pendente/recusado explícitos. |
 | `/login`, `/register`  | Entrar / Criar conta | Diálogo com scrim + foco preso no desktop; página no celular. `?redirect=` preservado.                               |
@@ -560,6 +560,8 @@ também é:
   (`MobileTopBar` para título; busca + filtros na vitrine; botões flutuantes no
   detalhe). A navegação vive na barra inferior com ícones
   (`Início / Favoritos / Carrinho (FAB) / Carteiras / Perfil`).
+- **Carrinho mobile:** compõe seu próprio cabeçalho, oculta a tab bar sob o
+  resumo de compra fixo e permite rolar a lista por baixo dele, como no frame.
 - A rota **`/favorites`** é nova e protegida; o coração dos cartões usa update
   otimista. No celular, o "Sair" fica no perfil (o cabeçalho não existe lá).
 - No celular a vitrine usa **masonry de 2 colunas** com a coluna direita
@@ -573,6 +575,8 @@ também é:
 - `NftCard`: arte em quadro arredondado, selo ("RARO") e coração **sobrepostos**
   à imagem, nome e **preço em laranja** abaixo — sem moldura em volta do texto.
 - `FavoriteButton`: ícone de **coração** (antes estrela), com `aria-pressed`.
+- `SocialButtons`: botões demonstrativos com marcas Google/Facebook; não iniciam
+  OAuth nem afirmam sucesso de autenticação externa.
 
 ## Rodapé
 

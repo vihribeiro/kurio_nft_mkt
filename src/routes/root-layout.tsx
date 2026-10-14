@@ -31,6 +31,7 @@ export function RootLayout() {
   const { pathname, hash } = useLocation()
   const navigate = useNavigate()
   const activeSection = hash.replace(/^#/, '')
+  const isCartPage = pathname === '/cart'
 
   /** "Mercado" cobre o fluxo de compra; "Início" é só a home. */
   const mercadoActive = /^\/(cart|checkout|order|nft)\b/.test(pathname)
@@ -168,7 +169,7 @@ export function RootLayout() {
         </div>
       </header>
 
-      <main id="conteudo" className="flex-1 pb-24 md:pb-0">
+      <main id="conteudo" className={cn('flex-1', isCartPage ? 'pb-0' : 'pb-24', 'md:pb-0')}>
         <Suspense fallback={<PageLoader />}>
           <Outlet />
         </Suspense>
@@ -176,7 +177,7 @@ export function RootLayout() {
 
       <nav
         aria-label="Principal (celular)"
-        className="fixed inset-x-0 bottom-0 z-40 h-[95px] md:hidden"
+        className={cn('fixed inset-x-0 bottom-0 z-40 h-[95px] md:hidden', isCartPage && 'hidden')}
       >
         <svg
           aria-hidden="true"

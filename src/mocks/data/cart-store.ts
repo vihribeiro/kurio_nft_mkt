@@ -145,6 +145,7 @@ export function cartItemFromNft(nftId: string): CartItem | undefined {
     name: nft.name,
     collectionName: nft.collectionName,
     imageUrl: nft.imageUrl,
+    edition: nft.edition,
     priceEth: nft.priceEth,
     quantity: 1,
     version: nft.version,

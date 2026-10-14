@@ -6,8 +6,9 @@ ou banco de dados.
 
 - **Aplicação publicada:** https://kurio-nft-marketplace-chi.vercel.app
 - **Stack:** React, TypeScript, Vite, Tailwind CSS, TanStack Router/Query e MSW.
-- **Funcionalidades:** hero e tab bar mobile fiéis ao Figma, catálogo com filtros e paginação, detalhe
-  de NFT, favoritos, carrinho, checkout com carteiras da conta e rede selecionáveis, pedidos e perfil.
+- **Funcionalidades:** hero e tab bar mobile fiéis ao Figma, catálogo com filtros e paginação, selo de raridade,
+  carrinho adaptado aos frames desktop/mobile, detalhe de NFT, favoritos, checkout com carteiras e rede selecionáveis,
+  pedidos, perfil e botões sociais com ícones do Google e Facebook.
 - **Tempo real:** preços e disponibilidade simulados por Socket.IO.
 
 ## Executar localmente
@@ -31,6 +32,9 @@ npm test            # testes unitários
 npx playwright install chromium  # uma vez, para os testes E2E
 npm run e2e         # testes de fluxos desktop e mobile
 ```
+
+Última execução: 2 testes unitários aprovados; 164 E2E aprovados e 10 pulados por
+viewport. Build, tipos, lint e formatação também passaram.
 
 ## Cenários reproduzíveis
 

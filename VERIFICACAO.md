@@ -23,7 +23,8 @@ Complementa, sem substituir:
 | Tipos                                   | ✅                           | `npx tsc -b` sem erros                             |
 | Lint                                    | ✅                           | `npx eslint .` sem avisos                          |
 | Formatação                              | ✅                           | `npm run format:check` limpo                       |
-| Testes E2E                              | ✅ 162 passam · 10 pulados   | `npx playwright test` (desktop + mobile; 86 casos) |
+| Testes unitários                        | ✅ 2 passam                  | `npm run test` (Vitest)                            |
+| Testes E2E                              | ✅ 164 passam · 10 pulados   | `npx playwright test` (desktop + mobile; 87 casos) |
 | Lighthouse (a11y / boas práticas / SEO) | 100 / 100 / 100              | mediana de 3 execuções por tela/perfil             |
 | Lighthouse (performance)                | 98/98 desktop · 78/76 mobile | mediana de 3 execuções por tela/perfil             |
 | Deploy                                  | ✅                           | produção na Vercel, deep link + F5 verificados     |
@@ -550,8 +551,8 @@ inválido).
 
 Rodam contra o **bundle de produção** (`build` + `preview`) — única forma de
 provar deep link, refresh e o rewrite de SPA. Projetos: `desktop` (1440×900) e
-`mobile` (Pixel 5). **86 casos × 2 projetos = 172 execuções**; no último
-resultado, 162 passaram e 10 foram puladas por viewport (diálogos/menu desktop
+`mobile` (Pixel 5). **87 casos × 2 projetos = 174 execuções**; no último
+resultado, 164 passaram e 10 foram puladas por viewport (diálogos/menu desktop
 no mobile e busca/carrossel exclusivos de um dos perfis).
 
 ### 16.1 Mapa de cobertura (fluxo → arquivo)
@@ -629,7 +630,7 @@ evidência E2E e limites da simulação identificados.
 
 | Arquivo                   | Testes | Foco                                                            |
 | ------------------------- | -----: | --------------------------------------------------------------- |
-| `catalog.spec.ts`         |      6 | lista, tempo real, detalhe, share, 404, deep link               |
+| `catalog.spec.ts`         |      7 | lista, raridade, tempo real, detalhe, share, 404, deep link     |
 | `catalog-filters.spec.ts` |      4 | filtro combinado, paginação, histórico e resposta fora de ordem |
 | `header-search.spec.ts`   |      1 | overlay com busca incremental e seleção de resultado            |
 | `hero-carousel.spec.ts`   |      3 | slides mobile/desktop, indicadores e avanço automático          |
@@ -668,7 +669,7 @@ evidência E2E e limites da simulação identificados.
 ### 16.4 Resultado
 
 ```text
-162 passed, 10 skipped (2.1m)
+164 passed, 10 skipped (2.0m)
 ```
 
 ---
@@ -823,7 +824,7 @@ npx vercel deploy --prod --yes --name kurio-nft-marketplace
 ```
 
 - `--prod` promove a produção; `--yes` aceita os padrões (sem prompts);
-  `--name` fixa o nome do projeto.
+  o projeto já está vinculado ao diretório local pelo `.vercel/`.
 - A CLI **envia o código e a Vercel constrói remotamente**, transmitindo o log
   do `vite build`.
 - Resultado:
@@ -843,13 +844,12 @@ done
 
 ```text
 200  /
-200  /nft/emerald-ape-042
+200  /
+200  /login
 200  /cart
-200  /checkout
-200  /order/order_demo
-200  /favorites
-200  /profile
 200  /wallets
+200  /checkout
+200  /nft/emerald-ape-042
 ```
 
 Smoke funcional no ar (Chromium, sessão isolada), que passou:
@@ -872,7 +872,7 @@ Layout responsivo no ar (Playwright, `window.innerWidth` real):
 | 768      | 768 px              | 3 colunas | oculta         |
 | 393      | 393 px              | 2 colunas | visível        |
 
-### 18.7 Passo 5 — publicação final da rodada de conformidade
+### 18.7 Passo 5 — publicação visual final (14/10/2026)
 
 Após implementação, suíte E2E, atualização dos baselines e auditoria Lighthouse,
 foi publicado o código final:
@@ -881,7 +881,9 @@ foi publicado o código final:
 npx vercel deploy --prod --yes
 ```
 
-O **alias de produção é estável** — continua o mesmo endereço.
+Deploy `dpl_EAegZJ2N2CCxM6wtr7JYAkqa9zYG` ficou `READY` e foi promovido para
+<https://kurio-nft-marketplace-chi.vercel.app>. O alias de produção permanece
+estável; as seis rotas verificadas acima responderam `200`.
 
 ### 18.8 Artefatos publicados (`dist/`, ~1,8 MB)
 
@@ -943,7 +945,8 @@ confirmar/ajustar, veja **Vercel → Project → Settings → Deployment Protect
 npm ci
 npm run build
 npx playwright install chromium
-npm run e2e                                                     # 162 passed, 10 skipped
+npm run test                                                    # 2 passed
+npm run e2e                                                     # 164 passed, 10 skipped
 npm run format:check && npx tsc -b && npx eslint .
 ```
 
@@ -997,7 +1000,7 @@ de que exigiriam um provedor externo; não simulam sucesso.
 Conferência final baseada no README oficial e nos 12 cenários da seção 16:
 catálogo, URL, persistência por usuário, eventos `nft.updated`/`order.updated`,
 checkout terminal, idempotência, reconnect, formulários e condições de rede
-estão implementados e cobertos por E2E. No último resultado, 162 execuções
+estão implementados e cobertos por E2E. No último resultado, 164 execuções
 passaram e 10 foram puladas por viewport.
 
 Limites da simulação estão descritos em §16.1.2: não há integração real de

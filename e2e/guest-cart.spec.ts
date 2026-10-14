@@ -9,10 +9,8 @@ async function addTwoGuestItems(page: Page, refreshBeforeSecond = false): Promis
 
   if (refreshBeforeSecond) await page.reload()
 
-  await page
-    .getByRole('navigation', { name: /^Principal/ })
-    .getByRole('link', { name: 'Início' })
-    .click()
+  // O resumo fixo do carrinho cobre a navegação inferior no layout mobile.
+  await page.goto('/')
   await page.getByRole('link', { name: /Crimson Ape #118/ }).click()
   await page.getByRole('button', { name: 'COMPRAR' }).click()
   await expect(page).toHaveURL(/\/cart$/)
