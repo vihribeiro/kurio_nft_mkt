@@ -503,11 +503,8 @@ orçamento do desafio:
   tela/perfil e mediana (ver `README.md` e `VERIFICACAO.md` §17). A performance
   mobile fica abaixo de 90 por causa do backend simulado no navegador
   (justificativa em `VERIFICACAO.md` §17.1); desktop fica em 98. A11y, Best
-  Practices e SEO ficaram em 100 nos perfis medidos. O painel de cenários não é
-  otimizado para produção.
-- Recomendação: **revogar o token do Figma** usado durante a extração de
-  referência (Figma → Settings → Security) — ele não é necessário para rodar o
-  projeto.
+  Practices e SEO ficaram em 100 nos perfis medidos. Os cenários são controlados
+  pelos endpoints documentados no README; não há painel visual de cenários.
 
 ---
 

@@ -6,7 +6,7 @@ import { env } from '@/shared/config/env'
  * Permitem demonstrar caminhos que não são o "caminho feliz" sem precisar
  * editar código: catálogo vazio, falha no checkout, rede lenta. O cenário
  * inicial vem de `VITE_MOCK_SCENARIO` e pode ser trocado em tempo de execução
- * pelo painel de cenários (`VITE_ENABLE_SCENARIO_SWITCHER`).
+ * pelo endpoint de controle `POST /__mock__/scenario`.
  */
 export const SCENARIOS = [
   'happy-path',

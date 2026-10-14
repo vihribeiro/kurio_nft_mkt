@@ -39,24 +39,28 @@ mock da aplicação publicada ou local, abra o app, use o console do navegador e
 execute:
 
 ```js
-const api = 'https://api.kurio.local'
+window.kurioMockApi = 'https://api.kurio.local'
 
 // Consultar o cenário atual e os cenários disponíveis.
-await fetch(`${api}/__mock__/state`).then((response) => response.json())
+await fetch(`${window.kurioMockApi}/__mock__/state`).then((response) => response.json())
 
 // Ativar uma falha ou condição de rede; depois, recarregar a página.
-await fetch(`${api}/__mock__/scenario`, {
+await fetch(`${window.kurioMockApi}/__mock__/scenario`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ name: 'checkout-error' }),
 })
 
 // Restaurar fixtures, estado local e caminho feliz.
-await fetch(`${api}/__mock__/reset`, { method: 'POST' }).then((response) => response.json())
+await fetch(`${window.kurioMockApi}/__mock__/reset`, { method: 'POST' }).then((response) =>
+  response.json(),
+)
 ```
 
 Os comandos precisam ser executados no console da própria página para que o
-Mock Service Worker intercepte a API fictícia. Cenários disponíveis:
+Mock Service Worker intercepte a API fictícia. No ambiente local, também é
+possível escolher o cenário no boot: `VITE_MOCK_SCENARIO=slow-network npm run dev`.
+Cenários disponíveis:
 
 | Cenário                             | Como reproduzir                                         | Resultado esperado                                       |
 | ----------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
@@ -72,6 +76,35 @@ Mock Service Worker intercepte a API fictícia. Cenários disponíveis:
 
 Checkout requer uma conta e um NFT no carrinho. Para retornar ao estado inicial,
 use `POST /__mock__/reset`.
+
+### Reproduzir falhas específicas
+
+- **Pagamento recusado:** selecione `payment-declined` e confirme o checkout.
+  O pedido fica recusado e o carrinho é preservado. O cenário `checkout-error`
+  é diferente: simula um HTTP 502 ao criar o pedido.
+- **Cupom inválido ou expirado:** no carrinho, aplique `ERRADO` ou `EXPIROU`.
+- **Cotação desatualizada:** deixe o checkout aberto e altere o preço do item;
+  o evento em tempo real invalida a cotação e bloqueia a confirmação até revisar.
+- **Sessão expirada:** faça login e revogue o token da sessão atual. O próximo
+  acesso protegido exige novo login.
+
+Use estes comandos no console da página para alterar o preço ou expirar a sessão:
+
+```js
+// Atualiza o preço e emite nft.updated para emerald-ape-042.
+await fetch(`${window.kurioMockApi}/__mock__/set-price`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ nftId: 'emerald-ape-042', priceEth: '2.50' }),
+})
+
+// Revoga a sessão atual; faça login antes de executar.
+await fetch(`${window.kurioMockApi}/__mock__/expire-session`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ token: localStorage.getItem('kurio.session.token') }),
+})
+```
 
 ## Auditoria Lighthouse
 
@@ -102,18 +135,22 @@ combinação três vezes, usando sufixos `-1`, `-2` e `-3` no caminho de saída:
 ```bash
 npx lighthouse http://localhost:4173/ \
   --only-categories=performance,accessibility,best-practices,seo \
+  --chrome-flags="--headless=new" \
   --output=json,html --output-path=docs/lighthouse/inicio-mobile-1
 
 npx lighthouse http://localhost:4173/ --preset=desktop \
   --only-categories=performance,accessibility,best-practices,seo \
+  --chrome-flags="--headless=new" \
   --output=json,html --output-path=docs/lighthouse/inicio-desktop-1
 
 npx lighthouse http://localhost:4173/nft/emerald-ape-042 \
   --only-categories=performance,accessibility,best-practices,seo \
+  --chrome-flags="--headless=new" \
   --output=json,html --output-path=docs/lighthouse/detalhe-mobile-1
 
 npx lighthouse http://localhost:4173/nft/emerald-ape-042 --preset=desktop \
   --only-categories=performance,accessibility,best-practices,seo \
+  --chrome-flags="--headless=new" \
   --output=json,html --output-path=docs/lighthouse/detalhe-desktop-1
 ```
 

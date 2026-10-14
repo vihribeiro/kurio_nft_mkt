@@ -520,13 +520,12 @@ Além do caminho feliz, para demonstrar caminhos de erro sem editar código:
 
 Todas têm **padrão seguro**; nenhuma é obrigatória (o app roda num checkout limpo).
 
-| Variável                        | Padrão                    | Papel                                       |
-| ------------------------------- | ------------------------- | ------------------------------------------- |
-| `VITE_API_URL`                  | `https://api.kurio.local` | Prefixo da API (fictício; o MSW intercepta) |
-| `VITE_SOCKET_PATH`              | `/socket.io`              | Caminho do Socket.IO (mesma origem)         |
-| `VITE_ENABLE_MOCKS`             | `true`                    | Liga o MSW                                  |
-| `VITE_MOCK_SCENARIO`            | `happy-path`              | Cenário inicial                             |
-| `VITE_ENABLE_SCENARIO_SWITCHER` | `true`                    | Habilita o controle de cenário do mock      |
+| Variável             | Padrão                    | Papel                                       |
+| -------------------- | ------------------------- | ------------------------------------------- |
+| `VITE_API_URL`       | `https://api.kurio.local` | Prefixo da API (fictício; o MSW intercepta) |
+| `VITE_SOCKET_PATH`   | `/socket.io`              | Caminho do Socket.IO (mesma origem)         |
+| `VITE_ENABLE_MOCKS`  | `true`                    | Liga o MSW                                  |
+| `VITE_MOCK_SCENARIO` | `happy-path`              | Cenário inicial                             |
 
 Validado por zod em `src/shared/config/env.ts` (o app falha cedo se algo estiver
 inválido).
@@ -1001,9 +1000,3 @@ carteira/blockchain/pagamento, e login social/recuperação exibem aviso em vez 
 fingir uma operação externa.
 
 ---
-
-## 21. Pendência
-
-- **Revogar o token de acesso do Figma** usado na extração de referência
-  (Figma → **Settings → Security → Personal access tokens**). O projeto não
-  precisa dele; `reference/` é ignorado pelo deploy.

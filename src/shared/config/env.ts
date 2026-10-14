@@ -14,10 +14,6 @@ const envSchema = z.object({
     .default('true')
     .transform((value) => value !== 'false'),
   VITE_MOCK_SCENARIO: z.string().default('happy-path'),
-  VITE_ENABLE_SCENARIO_SWITCHER: z
-    .string()
-    .default('true')
-    .transform((value) => value !== 'false'),
 })
 
 const parsed = envSchema.safeParse(import.meta.env)
@@ -35,5 +31,4 @@ export const env = {
   socketPath: parsed.data.VITE_SOCKET_PATH,
   mocksEnabled: parsed.data.VITE_ENABLE_MOCKS,
   mockScenario: parsed.data.VITE_MOCK_SCENARIO,
-  scenarioSwitcherEnabled: parsed.data.VITE_ENABLE_SCENARIO_SWITCHER,
 } as const
